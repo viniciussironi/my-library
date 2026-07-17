@@ -1,12 +1,27 @@
 package com.vinicius.mylibrary.DTOs;
 
-import lombok.Data;
+import com.vinicius.mylibrary.entities.Annotation;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Data
+import java.time.LocalDateTime;
+
+@Getter
+@NoArgsConstructor
 public class AnnotationDTO {
-    private Long id;
-    private String content;
-    private Integer page;
-    private Long bookId;
+    private String id;
     private Long userId;
+    private Long bookId;
+    private Integer page;
+    private String content;
+    private LocalDateTime createdAt;
+
+    public AnnotationDTO(Annotation annotation) {
+        this.id = annotation.getId();
+        this.userId = annotation.getUserId();
+        this.bookId = annotation.getBookId();
+        this.page = annotation.getPage();
+        this.content = annotation.getContent();
+        this.createdAt = annotation.getCreatedAt();
+    }
 }

@@ -1,8 +1,10 @@
 package com.vinicius.mylibrary.DTOs;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Data
+@Getter
+@NoArgsConstructor
 public class UserDTO {
     private Long id;
     private String name;

@@ -1,25 +1,20 @@
 package com.vinicius.mylibrary.entities;
 
-import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "annotations")
+import java.time.LocalDateTime;
+
 @Data
+@Document(collection = "annotations")
 public class Annotation {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    private String id;
+    private Long userId;
+    private Long bookId;
+    private Integer page;
     private String content;
-    private int page;
-
-    @ManyToOne
-    @JoinColumn(name = "book_id")
-    private Book bookReference;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User userReference;
+    private LocalDateTime createdAt;
 }

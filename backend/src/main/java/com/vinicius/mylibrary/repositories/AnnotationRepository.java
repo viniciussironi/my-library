@@ -1,7 +1,12 @@
 package com.vinicius.mylibrary.repositories;
 
 import com.vinicius.mylibrary.entities.Annotation;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface AnnotationRepository extends CrudRepository<Annotation, Long> {
+import java.util.List;
+
+public interface AnnotationRepository extends MongoRepository<Annotation, String> {
+
+    List<Annotation> findByBookId(Long bookId);
+    List<Annotation> findByUserId(Long userId);
 }

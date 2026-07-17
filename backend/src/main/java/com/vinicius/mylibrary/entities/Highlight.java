@@ -1,25 +1,18 @@
 package com.vinicius.mylibrary.entities;
 
-import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "highlights")
 @Data
+@Document(collection = "annotations")
 public class Highlight {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String highlightedText;
-    private int page;
-
-    @ManyToOne
-    @JoinColumn(name = "book_id")
-    private Book bookReference;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User userReference;
+    private String id;
+    private Long userId;
+    private Long bookId;
+    private String highlight;
+    private Integer page;
+    private String color;
 }
