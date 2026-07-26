@@ -15,17 +15,26 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 @Service
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final AuthService authService;
 
-    public BookService(BookRepository bookRepository) {
+    public BookService(BookRepository bookRepository, UserService userService, AuthService authService) {
         this.bookRepository = bookRepository;
+        this.authService = authService;
     }
 
-    // Upload do documento - PRONTO
+    public List<BookDTO> findMyBooks() {
+        return bookRepository.findBooksByUserId(authService.authenticated().getId())
+                .stream()
+                .map(BookDTO::new)
+                .toList();
+    }
+
     public BookDTO uploadBookFile(MultipartFile file) throws IOException {
         Path uploadDir = Paths.get("uploads");
         if (!Files.exists(uploadDir)) {
@@ -38,6 +47,7 @@ public class BookService {
         Book book = new Book();
         book.setFilePath(filePath.toString());
         book.setStatus(BookStatus.WANT_TO_READ);
+        book.setUser(authService.authenticated());
 
         String filename = file.getOriginalFilename().toLowerCase();
 

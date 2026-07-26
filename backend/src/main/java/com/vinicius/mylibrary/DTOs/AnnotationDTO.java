@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class AnnotationDTO {
     private String id;
-    private Long userId;
     private Long bookId;
     private Integer page;
     private String content;
@@ -18,7 +17,6 @@ public class AnnotationDTO {
 
     public AnnotationDTO(Annotation annotation) {
         this.id = annotation.getId();
-        this.userId = annotation.getUserId();
         this.bookId = annotation.getBookId();
         this.page = annotation.getPage();
         this.content = annotation.getContent();

@@ -9,18 +9,16 @@ import lombok.NoArgsConstructor;
 public class HighlightDTO {
 
     private String id;
-    private Long userId;
-    private Long bookId;
     private String highlight;
     private Integer page;
     private String color;
+    private Long bookId;
 
     public HighlightDTO(Highlight highlight) {
         this.id = highlight.getId();
-        this.userId = highlight.getUserId();
-        this.bookId = highlight.getBookId();
         this.highlight = highlight.getHighlight();
         this.page = highlight.getPage();
         this.color = highlight.getColor();
+        this.bookId = highlight.getBookId();
     }
 }

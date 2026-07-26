@@ -7,9 +7,12 @@ import com.vinicius.mylibrary.entities.Highlight;
 import com.vinicius.mylibrary.repositories.AnnotationRepository;
 import com.vinicius.mylibrary.repositories.BookRepository;
 import com.vinicius.mylibrary.repositories.HighlightRepository;
+import com.vinicius.mylibrary.services.exceptions.ResourceNotFoundException;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class LibraryService {
 
     private final BookRepository bookRepository;
@@ -24,8 +27,7 @@ public class LibraryService {
         this.highlightRepository = highlightRepository;
     }
 
-    // Busca o livro com as anotações e marcações - PRONTO
-    public BookDetailsDTO getBookDetails(Long bookId) {
+    public BookDetailsDTO getBookDetails(Long bookId) throws ResourceNotFoundException {
         Book book = bookRepository.findById(bookId).orElseThrow();
         List<Annotation> annotations = annotationRepository.findByBookId(bookId);
         List<Highlight> highlights = highlightRepository.findByBookId(bookId);

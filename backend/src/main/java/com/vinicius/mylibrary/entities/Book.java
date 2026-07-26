@@ -16,4 +16,8 @@ public class Book {
     private String author;
     private BookStatus status;
     private String filePath;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

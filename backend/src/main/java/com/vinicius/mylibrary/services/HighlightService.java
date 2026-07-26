@@ -13,29 +13,43 @@ import java.util.List;
 @Service
 public class HighlightService {
     private final HighlightRepository highlightRepository;
+    private final AuthService authService;
 
-    public HighlightService(HighlightRepository highlightRepository) {
+    public HighlightService(HighlightRepository highlightRepository, AuthService authService) {
         this.highlightRepository = highlightRepository;
+        this.authService = authService;
     }
 
-    public List<HighlightDTO> findAll() {
-        return highlightRepository.findAll().stream().map(HighlightDTO::new).toList();
+    public List<HighlightDTO> findAllHighlights() throws ResourceNotFoundException {
+        return highlightRepository.findByUserId(authService.authenticated().getId()).stream().map(HighlightDTO::new).toList();
     }
 
-    public HighlightDTO save(Highlight highlight) {
-        Highlight highlightSaved = highlightRepository.save(highlight);
-        return new HighlightDTO(highlightSaved);
+    public List<HighlightDTO> findHighlightsByBook(Long bookId) throws ResourceNotFoundException {
+        return highlightRepository.findByBookId(bookId).stream().map(HighlightDTO::new).toList();
     }
 
-    public HighlightDTO update(String id, Highlight updated) {
-        Highlight existing = highlightRepository.findById(id).orElseThrow();
-        existing.setHighlight(updated.getHighlight());
-        existing.setPage(updated.getPage());
-        existing.setColor(updated.getColor());
-        return new HighlightDTO(highlightRepository.save(existing));
+    public HighlightDTO save(HighlightDTO highlight) throws ResourceNotFoundException, DatabaseException {
+        Highlight entity = new Highlight();
+        entity.setUserId(authService.authenticated().getId());
+        dtoToEntity(highlight, entity);
+
+        entity = highlightRepository.save(entity);
+
+        return new HighlightDTO(entity);
+    }
+
+    public HighlightDTO update(String id, HighlightDTO updated) {
+        Highlight entity = highlightRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
+        entity.setUserId(authService.authenticated().getId());
+        dtoToEntity(updated, entity);
+
+        entity = highlightRepository.save(entity);
+
+        return new HighlightDTO(entity);
     }
 
     public void delete(String id) {
+        authService.authenticated();
         if(!highlightRepository.existsById(id)) {
             throw new ResourceNotFoundException("Marcação não encontrada");
         }
@@ -45,5 +59,12 @@ public class HighlightService {
         catch (DataIntegrityViolationException e) {
             throw new DatabaseException("Falha de integridade");
         }
+    }
+
+    private void dtoToEntity(HighlightDTO dto, Highlight entity) {
+        entity.setHighlight(dto.getHighlight());
+        entity.setPage(dto.getPage());
+        entity.setColor(dto.getColor());
+        entity.setBookId(dto.getBookId());
     }
 }

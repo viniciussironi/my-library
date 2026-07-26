@@ -1,8 +1,13 @@
 package com.vinicius.mylibrary.controllers;
 
-import com.vinicius.mylibrary.entities.User;
+import com.vinicius.mylibrary.DTOs.UserDTO;
+import com.vinicius.mylibrary.DTOs.UserInsertDTO;
 import com.vinicius.mylibrary.services.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/users")
@@ -14,13 +19,33 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.save(user);
+    @GetMapping(value = "/me")
+    public ResponseEntity<UserDTO> getMe() {
+        return ResponseEntity.ok().body(userService.getMe());
     }
 
-    @GetMapping("/{email}")
-    public User getUserByEmail(@PathVariable String email) {
-        return userService.findByEmail(email);
+    @PostMapping
+    public ResponseEntity<UserDTO> createUser(@RequestBody UserInsertDTO user) {
+        UserDTO dto = userService.save(user);
+
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(dto.getId())
+                .toUri();
+
+        return ResponseEntity.created(uri).body(dto);
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserInsertDTO dto) {
+        UserDTO newDto = userService.update(id, dto);
+        return ResponseEntity.ok().body(newDto);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        userService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

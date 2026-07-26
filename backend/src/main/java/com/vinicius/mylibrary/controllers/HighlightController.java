@@ -1,7 +1,6 @@
 package com.vinicius.mylibrary.controllers;
 
 import com.vinicius.mylibrary.DTOs.HighlightDTO;
-import com.vinicius.mylibrary.entities.Highlight;
 import com.vinicius.mylibrary.services.HighlightService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,11 +21,16 @@ public class HighlightController {
 
     @GetMapping
     public ResponseEntity<List<HighlightDTO>> findAll() {
-        return ResponseEntity.ok(highlightService.findAll());
+        return ResponseEntity.ok(highlightService.findAllHighlights());
     }
 
-    @PostMapping
-    public ResponseEntity<HighlightDTO> create(@RequestBody Highlight highlight) {
+    @GetMapping("/{id}")
+    public ResponseEntity<List<HighlightDTO>> findByBookId(@PathVariable Long id) {
+        return ResponseEntity.ok(highlightService.findHighlightsByBook(id));
+    }
+
+    @PostMapping()
+    public ResponseEntity<HighlightDTO> create(@RequestBody HighlightDTO highlight) {
         HighlightDTO dto = highlightService.save(highlight);
 
         URI uri = ServletUriComponentsBuilder
@@ -39,7 +43,7 @@ public class HighlightController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<HighlightDTO> update(@PathVariable String id, @RequestBody Highlight highlight) {
+    public ResponseEntity<HighlightDTO> update(@PathVariable String id, @RequestBody HighlightDTO highlight) {
         return ResponseEntity.ok(highlightService.update(id, highlight));
     }
 

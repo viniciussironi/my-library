@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/books")
@@ -16,6 +17,11 @@ public class BookController {
 
     public BookController(BookService bookService) {
         this.bookService = bookService;
+    }
+
+    @GetMapping("mybooks")
+    public ResponseEntity<List<BookDTO>> findAllBooks() {
+        return ResponseEntity.ok(bookService.findMyBooks());
     }
 
     @PostMapping("/upload")

@@ -21,12 +21,12 @@ public class AnnotationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AnnotationDTO>> findAll() {
-        return ResponseEntity.ok(annotationService.findAll());
+    public ResponseEntity<List<AnnotationDTO>> AllAnnotations() {
+        return ResponseEntity.ok(annotationService.findAllAnnotations());
     }
 
     @PostMapping
-    public ResponseEntity<AnnotationDTO> create(@RequestBody Annotation annotation) {
+    public ResponseEntity<AnnotationDTO> create(@RequestBody AnnotationDTO annotation) {
         AnnotationDTO dto = annotationService.save(annotation);
 
         URI uri = ServletUriComponentsBuilder
@@ -39,7 +39,7 @@ public class AnnotationController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AnnotationDTO> update(@PathVariable String id, @RequestBody Annotation annotation) {
+    public ResponseEntity<AnnotationDTO> update(@PathVariable String id, @RequestBody AnnotationDTO annotation) {
         return ResponseEntity.ok(annotationService.update(id, annotation));
     }
 
