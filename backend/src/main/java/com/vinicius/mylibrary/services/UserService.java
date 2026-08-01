@@ -7,6 +7,7 @@ import com.vinicius.mylibrary.entities.User;
 import com.vinicius.mylibrary.repositories.RoleRepository;
 import com.vinicius.mylibrary.repositories.UserRepository;
 import com.vinicius.mylibrary.services.exceptions.DatabaseException;
+import com.vinicius.mylibrary.services.exceptions.EmailAlreadyExistsException;
 import com.vinicius.mylibrary.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -34,8 +35,15 @@ public class UserService {
     }
 
     public UserDTO save(UserInsertDTO user) {
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new EmailAlreadyExistsException("Este e-mail já está cadastrado");
+        }
+
         User entity = new User();
         Role role = roleRepository.findByAuthority("USER");
+        if (role == null) {
+            throw new IllegalStateException("Role não encontrada");
+        }
         dtoToEntity(user, entity);
         entity.getRoles().add(role);
 

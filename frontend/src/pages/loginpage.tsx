@@ -1,19 +1,20 @@
 import { useState } from "react";
-import axios from "axios";
-
+import { api } from "../config/api";
+import { useNavigate } from 'react-router-dom';
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const navigate = useNavigate();
 
     const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
-         e.preventDefault();
+        e.preventDefault();
         try {
-            await axios.post('http://localhost:8080/login', { email, password });
-            console.log("Login realizado com sucesso");
-        } catch (error) {
-            setError("Credenciais inválidas");
+            await api.post('/login', { email, password });
+            navigate('/mylibrary');
+        } catch (err) {
+            setError('Credenciais inválidas');
         }
     };
          
