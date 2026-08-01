@@ -3,6 +3,7 @@ package com.vinicius.mylibrary.security;
 import com.vinicius.mylibrary.services.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,12 +33,10 @@ public class JwtFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        final String authHeader = request.getHeader("Authorization");
+        String jwt = extractTokenFromCookie(request);
         String username = null;
-        String jwt = null;
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            jwt = authHeader.substring(7);
+        if (jwt != null) {
             username = jwtUtil.extractUsername(jwt);
         }
 
@@ -54,5 +53,16 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private String extractTokenFromCookie(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("jwt".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 }

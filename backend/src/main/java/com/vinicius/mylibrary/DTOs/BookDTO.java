@@ -15,7 +15,6 @@ public class BookDTO {
     private String author;
     private BookStatus status;
     private String filePath;
-    private UserDTO user;
 
     public BookDTO(Book book) {
         this.id = book.getId();
@@ -23,6 +22,5 @@ public class BookDTO {
         this.author = book.getAuthor();
         this.status = book.getStatus();
         this.filePath = book.getFilePath();
-        this.user = new UserDTO(book.getUser());
     }
 }
