@@ -1,5 +1,5 @@
-INSERT INTO roles (authority) VALUES ('USER');
-INSERT INTO roles (authority) VALUES ('ADMIN');
+INSERT INTO roles (authority) VALUES ('ROLE_USER');
+INSERT INTO roles (authority) VALUES ('ROLE_ADMIN');
 
 INSERT INTO users (name, email, password) VALUES ('Vinicius', 'viniciussironi@gmail.com', '$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG');
 

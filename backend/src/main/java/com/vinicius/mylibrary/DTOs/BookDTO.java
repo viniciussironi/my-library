@@ -14,13 +14,11 @@ public class BookDTO {
     private String title;
     private String author;
     private BookStatus status;
-    private String filePath;
 
     public BookDTO(Book book) {
         this.id = book.getId();
         this.title = book.getTitle();
         this.author = book.getAuthor();
         this.status = book.getStatus();
-        this.filePath = book.getFilePath();
     }
 }

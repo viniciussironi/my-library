@@ -8,6 +8,7 @@ import com.vinicius.mylibrary.repositories.AnnotationRepository;
 import com.vinicius.mylibrary.repositories.BookRepository;
 import com.vinicius.mylibrary.repositories.HighlightRepository;
 import com.vinicius.mylibrary.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.Transient;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,7 +32,6 @@ public class LibraryService {
         Book book = bookRepository.findById(bookId).orElseThrow();
         List<Annotation> annotations = annotationRepository.findByBookId(bookId);
         List<Highlight> highlights = highlightRepository.findByBookId(bookId);
-
         return new BookDetailsDTO(book, annotations, highlights);
     }
 }

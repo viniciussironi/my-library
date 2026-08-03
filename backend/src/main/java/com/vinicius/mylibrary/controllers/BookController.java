@@ -2,6 +2,8 @@ package com.vinicius.mylibrary.controllers;
 
 import com.vinicius.mylibrary.DTOs.BookDTO;
 import com.vinicius.mylibrary.services.BookService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,9 +21,9 @@ public class BookController {
         this.bookService = bookService;
     }
 
-    @GetMapping("mybooks")
-    public ResponseEntity<List<BookDTO>> findAllBooks() {
-        return ResponseEntity.ok(bookService.findMyBooks());
+    @GetMapping("/mybooks")
+    public ResponseEntity<Page<BookDTO>> findAllBooks(Pageable pageable) {
+        return ResponseEntity.ok(bookService.findMyBooks(pageable));
     }
 
     @PostMapping("/upload")

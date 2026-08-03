@@ -4,21 +4,31 @@ import com.vinicius.mylibrary.DTOs.BookDTO;
 import com.vinicius.mylibrary.entities.Book;
 import com.vinicius.mylibrary.enums.BookStatus;
 import com.vinicius.mylibrary.repositories.BookRepository;
+import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.epub.EpubReader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class BookService {
+
+    @Value("${app.upload-dir}")
+    private String uploadDirProperty;
 
     private final BookRepository bookRepository;
     private final AuthService authService;
@@ -28,36 +38,51 @@ public class BookService {
         this.authService = authService;
     }
 
-    public List<BookDTO> findMyBooks() {
-        return bookRepository.findBooksByUserId(authService.authenticated().getId())
-                .stream()
-                .map(BookDTO::new)
-                .toList();
+    public Page<BookDTO> findMyBooks(Pageable pageable) {
+        return bookRepository.findBooksByUserId(authService.authenticated().getId(), pageable).map(BookDTO::new);
     }
 
     public BookDTO uploadBookFile(MultipartFile file) throws IOException {
-        Path uploadDir = Paths.get("uploads");
-        if (!Files.exists(uploadDir)) {
-            Files.createDirectories(uploadDir);
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("Arquivo vazio");
         }
 
-        Path filePath = uploadDir.resolve(file.getOriginalFilename());
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null || originalFilename.isBlank()) {
+            throw new IllegalArgumentException("Nome de arquivo inválido");
+        }
+
+        String extension = StringUtils.getFilenameExtension(originalFilename);
+        if (extension == null || !List.of("pdf", "epub").contains(extension.toLowerCase())) {
+            throw new IllegalArgumentException("Tipo de arquivo não suportado");
+        }
+
+        Path uploadDir = Paths.get(uploadDirProperty).normalize().toAbsolutePath();
+        Files.createDirectories(uploadDir);
+
+        String storedFilename = UUID.randomUUID() + "." + extension.toLowerCase();
+        Path filePath = uploadDir.resolve(storedFilename).normalize();
+        if (!filePath.startsWith(uploadDir)) {
+            throw new IllegalArgumentException("Caminho de arquivo inválido");
+        }
+
         Files.write(filePath, file.getBytes());
 
         Book book = new Book();
         book.setFilePath(filePath.toString());
+        book.setTitle(originalFilename);
         book.setStatus(BookStatus.WANT_TO_READ);
         book.setUser(authService.authenticated());
 
-        String filename = file.getOriginalFilename().toLowerCase();
-
-        if (filename.endsWith(".pdf")) {
-            extractPdfMetadata(filePath, book);
-        } else if (filename.endsWith(".epub")) {
-            extractEpubMetadata(filePath, book);
-        } else {
-            book.setTitle("Unknown Title");
-            book.setAuthor("Unknown Author");
+        try {
+            if (extension.equalsIgnoreCase("pdf")) {
+                extractPdfMetadata(filePath, book);
+            } else {
+                extractEpubMetadata(filePath, book);
+            }
+        } catch (Exception e) {
+            Files.deleteIfExists(filePath);
+            throw e;
         }
 
         return new BookDTO(bookRepository.save(book));
