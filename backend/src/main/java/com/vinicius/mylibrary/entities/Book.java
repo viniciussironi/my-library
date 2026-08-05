@@ -24,14 +24,11 @@ public class Book {
     @Column(nullable = false, length = 500)
     private String title;
 
-    @Column(nullable = false)
     private String author;
 
-    @Column(nullable = false)
     private Integer totalPages;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private BookStatus status;
 
     @Column(nullable = false, length = 1000)

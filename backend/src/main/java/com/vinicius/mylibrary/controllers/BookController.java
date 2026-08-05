@@ -4,6 +4,7 @@ import com.vinicius.mylibrary.DTOs.BookDTO;
 import com.vinicius.mylibrary.services.BookService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +23,7 @@ public class BookController {
     }
 
     @GetMapping("/mybooks")
-    public ResponseEntity<Page<BookDTO>> findAllBooks(Pageable pageable) {
+    public ResponseEntity<Page<BookDTO>> findAllBooks(@PageableDefault(size = 12) Pageable pageable) {
         return ResponseEntity.ok(bookService.findMyBooks(pageable));
     }
 

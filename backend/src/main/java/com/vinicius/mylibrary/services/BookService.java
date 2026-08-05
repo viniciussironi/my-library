@@ -72,6 +72,7 @@ public class BookService {
         book.setFilePath(filePath.toString());
         book.setTitle(originalFilename);
         book.setStatus(BookStatus.WANT_TO_READ);
+        System.out.println(authService.authenticated().getEmail());
         book.setUser(authService.authenticated());
 
         try {
