@@ -5,7 +5,7 @@ export default function BookCard({ titulo, autor, capa }: { titulo: string; auto
     <div className="book-card">
       {/* Capa */}
       <img
-        src={capa}
+        src={`http://localhost:8080${capa}`} 
         alt={titulo}
       />
       <div className="book-info">

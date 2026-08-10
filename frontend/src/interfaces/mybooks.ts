@@ -3,7 +3,8 @@ export interface MyBooks {
         id: number,
         title: string,
         author: string,
-        status: string
+        status: string,
+        coverUrl: string,
     }[],
     pageable: {
         pageNumber: number,

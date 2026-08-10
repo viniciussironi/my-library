@@ -32,6 +32,7 @@ export default function LibraryPage() {
   
 
     return (
+        console.log(data),
         <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
             <HeaderLibrary />
             <Library mybooks={data} error={error} onPageChange={setPage} />

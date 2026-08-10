@@ -2,6 +2,7 @@ import type { MyBooks } from "../interfaces/mybooks";
 import BookCard from "./bookcard";
 
 export default function Library({ mybooks, error, onPageChange }: { mybooks: MyBooks, error:string, onPageChange: (page: number) => void }) {
+            
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {/* Grid de livros */}
@@ -13,7 +14,7 @@ export default function Library({ mybooks, error, onPageChange }: { mybooks: MyB
                 <BookCard
                     titulo={book.title}
                     autor={book.author}
-                    capa={''}
+                    capa={book.coverUrl}
                 />
                 ))
             )}

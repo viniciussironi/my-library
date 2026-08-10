@@ -2,20 +2,27 @@ package com.vinicius.mylibrary.services;
 
 import com.vinicius.mylibrary.DTOs.BookDTO;
 import com.vinicius.mylibrary.entities.Book;
+import com.vinicius.mylibrary.entities.User;
 import com.vinicius.mylibrary.enums.BookStatus;
 import com.vinicius.mylibrary.repositories.BookRepository;
-import nl.siegmann.epublib.domain.Resource;
+import com.vinicius.mylibrary.services.exceptions.ResourceNotFoundException;
 import nl.siegmann.epublib.epub.EpubReader;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileInputStream;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -29,6 +36,8 @@ public class BookService {
 
     @Value("${app.upload-dir}")
     private String uploadDirProperty;
+    @Value("${app.covers-dir}")
+    private String coversDirProperty;
 
     private final BookRepository bookRepository;
     private final AuthService authService;
@@ -36,6 +45,34 @@ public class BookService {
     public BookService(BookRepository bookRepository, UserService userService, AuthService authService) {
         this.bookRepository = bookRepository;
         this.authService = authService;
+    }
+
+    public Resource loadCover(Long bookId) throws IOException {
+        User user = authService.authenticated();
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new ResourceNotFoundException("Livro não encontrado"));
+
+        if (!book.getUser().getId().equals(user.getId())) {
+            throw new ResourceNotFoundException("Livro não encontrado");
+        }
+
+        if (book.getCoverFilename() == null) {
+            throw new ResourceNotFoundException("Livro não possui capa");
+        }
+
+        Path coversDir = Paths.get(coversDirProperty).normalize().toAbsolutePath();
+        Path coverPath = coversDir.resolve(book.getCoverFilename()).normalize();
+
+        if (!coverPath.startsWith(coversDir)) {
+            throw new IllegalArgumentException("Caminho de capa inválido");
+        }
+
+        Resource resource = new UrlResource(coverPath.toUri());
+        if (!resource.exists() || !resource.isReadable()) {
+            throw new ResourceNotFoundException("Arquivo de capa não encontrado");
+        }
+
+        return resource;
     }
 
     public Page<BookDTO> findMyBooks(Pageable pageable) {
@@ -72,7 +109,6 @@ public class BookService {
         book.setFilePath(filePath.toString());
         book.setTitle(originalFilename);
         book.setStatus(BookStatus.WANT_TO_READ);
-        System.out.println(authService.authenticated().getEmail());
         book.setUser(authService.authenticated());
 
         try {
@@ -83,6 +119,9 @@ public class BookService {
             }
         } catch (Exception e) {
             Files.deleteIfExists(filePath);
+            if (book.getCoverFilename() != null) {
+                Files.deleteIfExists(Paths.get(coversDirProperty).resolve(book.getCoverFilename()));
+            }
             throw e;
         }
 
@@ -90,10 +129,18 @@ public class BookService {
     }
 
     private void extractPdfMetadata(Path filePath, Book book) throws IOException {
-        try (PDDocument document = PDDocument.load(filePath.toFile())) {
+        try (PDDocument document = Loader.loadPDF(filePath.toFile())) {
             PDDocumentInformation info = document.getDocumentInformation();
             book.setTitle(info.getTitle() != null ? info.getTitle() : "Untitled PDF");
             book.setAuthor(info.getAuthor() != null ? info.getAuthor() : "Unknown Author");
+            book.setTotalPages(document.getNumberOfPages());
+
+            PDFRenderer renderer = new PDFRenderer(document);
+            BufferedImage image = renderer.renderImageWithDPI(0, 150);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(image, "png", baos);
+            book.setCoverFilename(saveCover(baos.toByteArray()));
         }
     }
 
@@ -106,6 +153,32 @@ public class BookService {
             book.setAuthor(epubBook.getMetadata().getAuthors().isEmpty()
                     ? "Unknown Author"
                     : epubBook.getMetadata().getAuthors().get(0).toString());
+            book.setTotalPages(epubBook.getSpine().size());
+
+            nl.siegmann.epublib.domain.Resource coverImage = epubBook.getCoverImage();
+            if (coverImage != null) {
+                book.setCoverFilename(saveCover(coverImage.getData()));
+            }
         }
     }
+
+    private String saveCover(byte[] coverBytes) throws IOException {
+        if (coverBytes == null) {
+            return null;
+        }
+
+        Path coversDir = Paths.get(coversDirProperty).normalize().toAbsolutePath();
+        Files.createDirectories(coversDir);
+
+        String coverFilename = UUID.randomUUID() + ".png";
+        Path coverPath = coversDir.resolve(coverFilename).normalize();
+        if (!coverPath.startsWith(coversDir)) {
+            throw new IllegalArgumentException("Caminho de capa inválido");
+        }
+
+        Files.write(coverPath, coverBytes);
+        return coverFilename;
+    }
+
+
 }

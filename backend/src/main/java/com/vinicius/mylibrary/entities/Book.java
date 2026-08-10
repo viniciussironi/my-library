@@ -28,6 +28,8 @@ public class Book {
 
     private Integer totalPages;
 
+    private String coverFilename;
+
     @Enumerated(EnumType.STRING)
     private BookStatus status;
 
