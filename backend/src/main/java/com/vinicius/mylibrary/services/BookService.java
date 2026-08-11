@@ -47,6 +47,12 @@ public class BookService {
         this.authService = authService;
     }
 
+    public Page<BookDTO> findMyBooks(String title, String author, Pageable pageable) {
+        Long userId = authService.authenticated().getId();
+        return bookRepository.search(userId, title, author, pageable).map(BookDTO::new);
+    }
+
+
     public Resource loadCover(Long bookId) throws IOException {
         User user = authService.authenticated();
         Book book = bookRepository.findById(bookId)
@@ -73,10 +79,6 @@ public class BookService {
         }
 
         return resource;
-    }
-
-    public Page<BookDTO> findMyBooks(Pageable pageable) {
-        return bookRepository.findBooksByUserId(authService.authenticated().getId(), pageable).map(BookDTO::new);
     }
 
     public BookDTO uploadBookFile(MultipartFile file) throws IOException {

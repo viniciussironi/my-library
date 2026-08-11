@@ -26,8 +26,10 @@ public class BookController {
     }
 
     @GetMapping("/mybooks")
-    public ResponseEntity<Page<BookDTO>> findAllBooks(@PageableDefault(size = 12) Pageable pageable) {
-        return ResponseEntity.ok(bookService.findMyBooks(pageable));
+    public ResponseEntity<Page<BookDTO>> findMyBooks(@RequestParam(required = false) String title,
+                                                     @RequestParam(required = false) String author,
+                                                     Pageable pageable) {
+        return ResponseEntity.ok(bookService.findMyBooks(title, author, pageable));
     }
 
     @PostMapping("/upload")
