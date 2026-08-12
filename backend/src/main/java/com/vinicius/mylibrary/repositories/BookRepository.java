@@ -15,11 +15,13 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     @Query("""
         SELECT b FROM Book b
         WHERE b.user.id = :userId
-        AND (:title IS NULL OR LOWER(b.title) LIKE LOWER(CONCAT('%', :title, '%')))
-        AND (:author IS NULL OR LOWER(b.author) LIKE LOWER(CONCAT('%', :author, '%')))
+        AND (
+            :search IS NULL 
+            OR LOWER(b.title) LIKE LOWER(CONCAT('%', :search, '%')) 
+            OR LOWER(b.author) LIKE LOWER(CONCAT('%', :search, '%'))
+        )
         """)
     Page<Book> search(@Param("userId") Long userId,
-                      @Param("title") String title,
-                      @Param("author") String author,
+                      @Param("search") String search,
                       Pageable pageable);
 }

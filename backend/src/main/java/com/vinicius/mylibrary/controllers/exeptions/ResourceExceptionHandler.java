@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.time.Instant;
 import java.util.Map;
@@ -51,7 +52,35 @@ public class ResourceExceptionHandler {
 
         err.setTimestamp(Instant.now());
         err.setStatus(status.value());
-        err.setError("Database exception");
+        err.setError("Email exception");
+        err.setMessage(e.getMessage());
+        err.setPath(request.getRequestURI());
+
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<StandardError> handleEmailExists(IllegalArgumentException e, HttpServletRequest request) {
+        StandardError err = new StandardError();
+        HttpStatus status = HttpStatus.FORBIDDEN;
+
+        err.setTimestamp(Instant.now());
+        err.setStatus(status.value());
+        err.setError("Upload exception");
+        err.setMessage(e.getMessage());
+        err.setPath(request.getRequestURI());
+
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<StandardError> handleEmailExists(MaxUploadSizeExceededException e, HttpServletRequest request) {
+        StandardError err = new StandardError();
+        HttpStatus status = HttpStatus.FORBIDDEN;
+
+        err.setTimestamp(Instant.now());
+        err.setStatus(status.value());
+        err.setError("Upload exception");
         err.setMessage(e.getMessage());
         err.setPath(request.getRequestURI());
 

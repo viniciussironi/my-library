@@ -2,7 +2,7 @@ import { Bars3Icon, BookOpenIcon, MagnifyingGlassIcon, XMarkIcon } from '@heroic
 import { useState } from 'react';
 
 
-export default function HeaderLibrary() {
+export default function HeaderLibrary( { onSearchChange }:  { onSearchChange: (search: string) => void }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -23,6 +23,7 @@ export default function HeaderLibrary() {
               type="text"
               placeholder="Buscar livros..."
               className="w-full pl-10 pr-4 py-2 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-400"
+              onChange={(e) => onSearchChange(e.target.value)}
             />
           </div>
         </div>

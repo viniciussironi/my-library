@@ -26,10 +26,9 @@ public class BookController {
     }
 
     @GetMapping("/mybooks")
-    public ResponseEntity<Page<BookDTO>> findMyBooks(@RequestParam(required = false) String title,
-                                                     @RequestParam(required = false) String author,
+    public ResponseEntity<Page<BookDTO>> findMyBooks(@RequestParam(required = false) String search,
                                                      Pageable pageable) {
-        return ResponseEntity.ok(bookService.findMyBooks(title, author, pageable));
+        return ResponseEntity.ok(bookService.findMyBooks(search, pageable));
     }
 
     @PostMapping("/upload")

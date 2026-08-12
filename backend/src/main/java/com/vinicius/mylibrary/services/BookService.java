@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -47,9 +48,9 @@ public class BookService {
         this.authService = authService;
     }
 
-    public Page<BookDTO> findMyBooks(String title, String author, Pageable pageable) {
+    public Page<BookDTO> findMyBooks(String search, Pageable pageable) {
         Long userId = authService.authenticated().getId();
-        return bookRepository.search(userId, title, author, pageable).map(BookDTO::new);
+        return bookRepository.search(userId, search, pageable).map(BookDTO::new);
     }
 
 
