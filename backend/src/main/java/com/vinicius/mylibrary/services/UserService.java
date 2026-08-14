@@ -10,13 +10,24 @@ import com.vinicius.mylibrary.services.exceptions.DatabaseException;
 import com.vinicius.mylibrary.services.exceptions.EmailAlreadyExistsException;
 import com.vinicius.mylibrary.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 
 @Service
 public class UserService {
+
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final AuthService authService;
@@ -46,7 +57,7 @@ public class UserService {
         }
         dtoToEntity(user, entity);
         entity.getRoles().add(role);
-
+        entity.setProfilePicture("default-profile.png");
         entity = userRepository.save(entity);
 
         return new UserDTO(entity);
@@ -75,6 +86,7 @@ public class UserService {
             throw new DatabaseException("Falha de integridade");
         }
     }
+
 
     private void dtoToEntity(UserInsertDTO dto, User entity) {
         entity.setName(dto.getName());

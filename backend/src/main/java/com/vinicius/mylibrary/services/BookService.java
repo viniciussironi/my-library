@@ -18,7 +18,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -35,10 +34,10 @@ import java.util.UUID;
 @Service
 public class BookService {
 
-    @Value("${app.upload-dir}")
-    private String uploadDirProperty;
+    @Value("${app.books-dir}")
+    private String booksDir;
     @Value("${app.covers-dir}")
-    private String coversDirProperty;
+    private String coversDir;
 
     private final BookRepository bookRepository;
     private final AuthService authService;
@@ -67,10 +66,10 @@ public class BookService {
             throw new ResourceNotFoundException("Livro não possui capa");
         }
 
-        Path coversDir = Paths.get(coversDirProperty).normalize().toAbsolutePath();
-        Path coverPath = coversDir.resolve(book.getCoverFilename()).normalize();
+        Path covers = Paths.get(coversDir).normalize().toAbsolutePath();
+        Path coverPath = covers.resolve(book.getCoverFilename()).normalize();
 
-        if (!coverPath.startsWith(coversDir)) {
+        if (!coverPath.startsWith(covers)) {
             throw new IllegalArgumentException("Caminho de capa inválido");
         }
 
@@ -97,7 +96,7 @@ public class BookService {
             throw new IllegalArgumentException("Tipo de arquivo não suportado");
         }
 
-        Path uploadDir = Paths.get(uploadDirProperty).normalize().toAbsolutePath();
+        Path uploadDir = Paths.get(booksDir).normalize().toAbsolutePath();
         Files.createDirectories(uploadDir);
 
         String storedFilename = UUID.randomUUID() + "." + extension.toLowerCase();
@@ -123,7 +122,7 @@ public class BookService {
         } catch (Exception e) {
             Files.deleteIfExists(filePath);
             if (book.getCoverFilename() != null) {
-                Files.deleteIfExists(Paths.get(coversDirProperty).resolve(book.getCoverFilename()));
+                Files.deleteIfExists(Paths.get(coversDir).resolve(book.getCoverFilename()));
             }
             throw e;
         }
@@ -170,12 +169,12 @@ public class BookService {
             return null;
         }
 
-        Path coversDir = Paths.get(coversDirProperty).normalize().toAbsolutePath();
-        Files.createDirectories(coversDir);
+        Path covers = Paths.get(coversDir).normalize().toAbsolutePath();
+        Files.createDirectories(covers);
 
         String coverFilename = UUID.randomUUID() + ".png";
-        Path coverPath = coversDir.resolve(coverFilename).normalize();
-        if (!coverPath.startsWith(coversDir)) {
+        Path coverPath = covers.resolve(coverFilename).normalize();
+        if (!coverPath.startsWith(covers)) {
             throw new IllegalArgumentException("Caminho de capa inválido");
         }
 
