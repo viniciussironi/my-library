@@ -1,18 +1,13 @@
 package com.vinicius.mylibrary.DTOs;
 
-import com.vinicius.mylibrary.entities.User;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class UpdateUserDTO {
+public class UserUpdateDTO {
 
+    @NotBlank(message = "Este campo não pode estar vazio")
     private String name;
-    private String profilePicture;
-
-    public UpdateUserDTO(User user) {
-        this.name = user.getName();
-        this.profilePicture = (user.getProfilePicture());
-    }
 }

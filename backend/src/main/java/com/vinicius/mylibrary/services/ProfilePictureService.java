@@ -1,16 +1,15 @@
 package com.vinicius.mylibrary.services;
 
 import com.vinicius.mylibrary.DTOs.UserDTO;
-import com.vinicius.mylibrary.entities.Book;
 import com.vinicius.mylibrary.entities.User;
 import com.vinicius.mylibrary.repositories.UserRepository;
+import com.vinicius.mylibrary.services.exceptions.InvalidFileException;
 import com.vinicius.mylibrary.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,7 +33,7 @@ public class ProfilePictureService {
         this.authService = authService;
     }
 
-    public Resource loadProfilePhoto() throws IOException {
+    public Resource getProfilePhoto() throws IOException {
         User user = authService.authenticated();
 
         Path photo = Paths.get(profilePictureDir).normalize().toAbsolutePath();
@@ -54,14 +53,14 @@ public class ProfilePictureService {
 
         validateImage(file);
 
-        String imgUrl = uploadPicture(file);
+        String imgUrl = upload(file);
         entity.setProfilePicture(imgUrl);
 
         entity = userRepository.save(entity);
         return new UserDTO(entity);
     }
 
-    private String uploadPicture(MultipartFile multipartFile) {
+    private String upload(MultipartFile multipartFile) {
         try {
             String profilePhotoFileName = UUID.randomUUID() + ".png";
 
@@ -77,15 +76,15 @@ public class ProfilePictureService {
 
     private void validateImage(MultipartFile file) {
         if (file.isEmpty()) {
-            throw new IllegalArgumentException("Arquivo vazio");
+            throw new InvalidFileException("Arquivo vazio");
         }
         String contentType = file.getContentType();
         if (contentType == null || !contentType.startsWith("image/")) {
-            throw new IllegalArgumentException("Arquivo deve ser uma imagem");
+            throw new InvalidFileException("Arquivo deve ser uma imagem");
         }
-        long maxSize = 5 * 1024 * 1024; // 5MB
+        long maxSize = 20 * 1024 * 1024;
         if (file.getSize() > maxSize) {
-            throw new IllegalArgumentException("Imagem muito grande (máx. 5MB)");
+            throw new InvalidFileException("Imagem muito grande (máx. 20MB)");
         }
     }
 }

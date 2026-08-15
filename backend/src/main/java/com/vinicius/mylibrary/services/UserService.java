@@ -1,5 +1,7 @@
 package com.vinicius.mylibrary.services;
 
+import com.vinicius.mylibrary.DTOs.UserUpdatePasswordDTO;
+import com.vinicius.mylibrary.DTOs.UserUpdateDTO;
 import com.vinicius.mylibrary.DTOs.UserDTO;
 import com.vinicius.mylibrary.DTOs.UserInsertDTO;
 import com.vinicius.mylibrary.entities.Role;
@@ -8,22 +10,13 @@ import com.vinicius.mylibrary.repositories.RoleRepository;
 import com.vinicius.mylibrary.repositories.UserRepository;
 import com.vinicius.mylibrary.services.exceptions.DatabaseException;
 import com.vinicius.mylibrary.services.exceptions.EmailAlreadyExistsException;
+import com.vinicius.mylibrary.services.exceptions.PasswordException;
 import com.vinicius.mylibrary.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.UUID;
 
 @Service
 public class UserService {
@@ -63,10 +56,10 @@ public class UserService {
         return new UserDTO(entity);
     }
 
-    public UserDTO update(Long id, UserInsertDTO dto) {
+    public UserDTO update(UserUpdateDTO dto) {
         try {
-            User entity = userRepository.getReferenceById(id);
-            dtoToEntity(dto, entity);
+            User entity = authService.authenticated();
+            entity.setName(dto.getName());
             entity = userRepository.save(entity);
             return new UserDTO(entity);
         }
@@ -75,12 +68,34 @@ public class UserService {
         }
     }
 
-    public void delete(Long id) {
-        if(!userRepository.existsById(id)) {
+    public UserDTO updatePassword(UserUpdatePasswordDTO dto) {
+        try {
+            User entity = authService.authenticated();
+
+            if (!passwordEncoder.matches(dto.getCurrentPassword(), entity.getPassword())) {
+                throw new PasswordException("Senha atual incorreta");
+            }
+
+            if (!dto.getNewPassword1().equals(dto.getNewPassword2())) {
+                throw new PasswordException("As senhas não são iguais");
+            }
+
+            entity.setPassword(passwordEncoder.encode(dto.getNewPassword1()));
+
+            entity = userRepository.save(entity);
+
+            return new UserDTO(entity);
+        }
+        catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException("Usuário não encotrado");
         }
+    }
+
+    public void delete() {
+        User entity = authService.authenticated();
+
         try {
-            userRepository.deleteById(id);
+            userRepository.delete(entity);
         }
         catch (DataIntegrityViolationException e) {
             throw new DatabaseException("Falha de integridade");

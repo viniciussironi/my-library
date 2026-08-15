@@ -25,7 +25,7 @@ export default function Library({ mybooks, error, onPageChange }: { mybooks: MyB
                 <button
                 onClick={() => onPageChange(mybooks.pageable.pageNumber - 1)}
                 disabled={mybooks.pageable.pageNumber === 1}
-                className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50 hover:bg-green-700 transition"
+                className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50 hover:bg-green-700 transition cursor-pointer"
                 >
                 Anterior
                 </button>
@@ -38,7 +38,7 @@ export default function Library({ mybooks, error, onPageChange }: { mybooks: MyB
                 <button
                 onClick={() => onPageChange(mybooks.pageable.pageNumber + 1)}
                 disabled={mybooks.pageable.pageNumber === mybooks.totalPages}
-                className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50 hover:bg-green-700 transition"
+                className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50 hover:bg-green-700 transition cursor-pointer"
                 >
                 Próxima
                 </button>

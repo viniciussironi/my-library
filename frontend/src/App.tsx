@@ -5,6 +5,7 @@ import LoginPage from './pages/loginpage'
 import LibraryPage from './pages/librarypage'
 import ReadPage from "./pages/readpage";
 import UploadBookPage from "./pages/uploadbookpage";
+import ProfileEditPage from "./pages/profileeditpage";
 
 export default function App() {
   return ( 
@@ -15,6 +16,7 @@ export default function App() {
         <Route path="/mylibrary" element={<LibraryPage />} />
         <Route path="/read" element={<ReadPage />} />
         <Route path="/upload" element={<UploadBookPage />} />
+        <Route path="/profile/edit" element={<ProfileEditPage />} />
       </Routes>
     </Router>
   )

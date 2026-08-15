@@ -5,6 +5,7 @@ import com.vinicius.mylibrary.entities.Book;
 import com.vinicius.mylibrary.entities.User;
 import com.vinicius.mylibrary.enums.BookStatus;
 import com.vinicius.mylibrary.repositories.BookRepository;
+import com.vinicius.mylibrary.services.exceptions.InvalidFileException;
 import com.vinicius.mylibrary.services.exceptions.ResourceNotFoundException;
 import nl.siegmann.epublib.epub.EpubReader;
 import org.apache.pdfbox.Loader;
@@ -83,17 +84,17 @@ public class BookService {
 
     public BookDTO uploadBookFile(MultipartFile file) throws IOException {
         if (file.isEmpty()) {
-            throw new IllegalArgumentException("Arquivo vazio");
+            throw new InvalidFileException("Arquivo vazio");
         }
 
         String originalFilename = file.getOriginalFilename();
         if (originalFilename == null || originalFilename.isBlank()) {
-            throw new IllegalArgumentException("Nome de arquivo inválido");
+            throw new InvalidFileException("Nome de arquivo inválido");
         }
 
         String extension = StringUtils.getFilenameExtension(originalFilename);
         if (extension == null || !List.of("pdf", "epub").contains(extension.toLowerCase())) {
-            throw new IllegalArgumentException("Tipo de arquivo não suportado");
+            throw new InvalidFileException("Tipo de arquivo não suportado");
         }
 
         Path uploadDir = Paths.get(booksDir).normalize().toAbsolutePath();

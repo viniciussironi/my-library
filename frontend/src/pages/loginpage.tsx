@@ -47,7 +47,7 @@ export default function LoginPage() {
                 </button>
                 </form>
                 {error && <p className="mt-2 text-center text-red-500">{error}</p>}
-                <p className="mt-4 text-center text-gray-600 dark:text-gray-400">Novo aqui?{" "}
+                <p className="mt-4 text-center text-gray-600 dark:text-gray-400 cursor-pointer">Novo aqui?{" "}
                     <a href="#" className="text-green-600 hover:underline">Cadastre-se</a>
                 </p>
             </div>

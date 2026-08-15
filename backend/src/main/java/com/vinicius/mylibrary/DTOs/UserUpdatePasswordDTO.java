@@ -1,18 +1,20 @@
 package com.vinicius.mylibrary.DTOs;
 
-import com.vinicius.mylibrary.entities.User;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class UpdatePasswordDTO {
+public class UserUpdatePasswordDTO {
 
+    @NotBlank(message = "Digite a senha")
     private String currentPassword;
-    private String password;
-
-    public UpdatePasswordDTO(User user) {
-        this.name = user.getName();
-        this.profilePicture = (user.getProfilePicture());
-    }
+    @Size(min = 8, max = 32, message = "A Senha deve ter de 8 a 32 caracteres")
+    @NotBlank(message = "Digite a senha")
+    private String newPassword1;
+    @Size(min = 8, max = 32, message = "A Senha deve ter de 8 a 32 caracteres")
+    @NotBlank(message = "Digite a senha")
+    private String newPassword2;
 }

@@ -39,7 +39,6 @@ export default function LibraryPage() {
             try {
             const response = await api.get<User>("/user/me");
             setUser(response.data);
-            console.log("User data fetched:", response.data);
             } catch (error) {
             setError(error as string);
             }

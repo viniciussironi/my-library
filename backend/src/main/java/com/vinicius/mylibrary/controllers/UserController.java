@@ -1,9 +1,12 @@
 package com.vinicius.mylibrary.controllers;
 
+import com.vinicius.mylibrary.DTOs.UserUpdateDTO;
 import com.vinicius.mylibrary.DTOs.UserDTO;
 import com.vinicius.mylibrary.DTOs.UserInsertDTO;
+import com.vinicius.mylibrary.DTOs.UserUpdatePasswordDTO;
 import com.vinicius.mylibrary.services.ProfilePictureService;
 import com.vinicius.mylibrary.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.core.io.Resource;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
@@ -34,7 +37,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/register")
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserInsertDTO user) {
+    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserInsertDTO user) {
         UserDTO dto = userService.save(user);
 
         URI uri = ServletUriComponentsBuilder
@@ -46,21 +49,27 @@ public class UserController {
         return ResponseEntity.created(uri).body(dto);
     }
 
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserInsertDTO dto) {
-        UserDTO newDto = userService.update(id, dto);
+    @PutMapping("/update")
+    public ResponseEntity<UserDTO> update(@Valid @RequestBody UserUpdateDTO dto) {
+        UserDTO newDto = userService.update(dto);
         return ResponseEntity.ok().body(newDto);
     }
 
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        userService.delete(id);
+    @PutMapping("/update/password")
+    public ResponseEntity<UserDTO> updatePassword(@Valid @RequestBody UserUpdatePasswordDTO dto) {
+        UserDTO newDto = userService.updatePassword(dto);
+        return ResponseEntity.ok().body(newDto);
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> delete() {
+        userService.delete();
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/profilephoto")
-    public ResponseEntity<Resource> getCover() throws IOException {
-        Resource resource = profilePictureService.loadProfilePhoto();
+    public ResponseEntity<Resource> getProfilePhoto() throws IOException {
+        Resource resource = profilePictureService.getProfilePhoto();
 
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_PNG)
