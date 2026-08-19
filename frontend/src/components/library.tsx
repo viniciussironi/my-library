@@ -23,24 +23,23 @@ export default function Library({ mybooks, error, onPageChange }: { mybooks: MyB
             {/* Paginação */}
             <div className="flex justify-center items-center mt-8 space-x-2">
                 <button
-                onClick={() => onPageChange(mybooks.pageable.pageNumber - 1)}
-                disabled={mybooks.pageable.pageNumber === 1}
-                className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50 hover:bg-green-700 transition cursor-pointer"
+                    onClick={() => onPageChange(mybooks.pageable.pageNumber - 1)}
+                    disabled={mybooks.pageable.pageNumber === 1}
+                    className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50 hover:bg-green-700 transition cursor-pointer"
                 >
-                Anterior
+                    Anterior
                 </button>
 
-                {/* Números das páginas */}
                 <span className="text-gray-700 font-medium">
-                Página {mybooks.pageable.pageNumber} de {mybooks.totalPages}
+                    Página {mybooks.pageable.pageNumber + 1} de {mybooks.totalPages}
                 </span>
 
                 <button
-                onClick={() => onPageChange(mybooks.pageable.pageNumber + 1)}
-                disabled={mybooks.pageable.pageNumber === mybooks.totalPages}
-                className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50 hover:bg-green-700 transition cursor-pointer"
+                    onClick={() => onPageChange(mybooks.pageable.pageNumber + 1)}
+                    disabled={mybooks.pageable.pageNumber === mybooks.totalPages}
+                    className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50 hover:bg-green-700 transition cursor-pointer"
                 >
-                Próxima
+                    Próxima
                 </button>
             </div>
         </div>    

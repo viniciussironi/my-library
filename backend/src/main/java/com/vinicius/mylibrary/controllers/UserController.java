@@ -82,4 +82,5 @@ public class UserController {
         UserDTO dto = profilePictureService.uploadProfilePhoto(file);
         return ResponseEntity.ok(dto);
     }
+
 }
