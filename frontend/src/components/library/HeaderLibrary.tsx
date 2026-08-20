@@ -1,30 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import {
-    BookOpenIcon,
-    MagnifyingGlassIcon,
-    XMarkIcon,
-    Bars3Icon,
-    ArrowUpTrayIcon,
-    DocumentCheckIcon,
-    XCircleIcon,
-    PlusIcon,
-} from '@heroicons/react/24/outline';
-import type { User } from '../interfaces/user';
-import { api } from '../config/api';
+import {BookOpenIcon,MagnifyingGlassIcon,XMarkIcon,Bars3Icon,ArrowUpTrayIcon,DocumentCheckIcon,XCircleIcon,PlusIcon} from '@heroicons/react/24/outline';
+
+import type { User } from '../../interfaces/User';
+import { api } from '../../config/api';
+
 
 const ALLOWED_EXTENSIONS = ['.pdf', '.epub'];
 
-export default function HeaderLibrary(
-{
-    user,
-    onSearchChange,
-    onUploadSuccess,
-}: {
-    user: User;
-    onSearchChange: (search: string) => void;
-    onUploadSuccess?: () => void;
-}) {
+export default function HeaderLibrary({user, onSearchChange, onUploadSuccess}: {user: User, onSearchChange: (search: string) => void, onUploadSuccess?: () => void}) {
     const [profileOpen, setProfileOpen] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const [search, setSearch] = useState('');

@@ -27,7 +27,7 @@ public class BookController {
 
     @GetMapping("/mybooks")
     public ResponseEntity<Page<BookDTO>> findMyBooks(@RequestParam(required = false) String search,
-                                                     Pageable pageable) {
+                                                     @PageableDefault(size = 8) Pageable pageable) {
         return ResponseEntity.ok(bookService.findMyBooks(search, pageable));
     }
 

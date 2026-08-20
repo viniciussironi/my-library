@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../../config/api";
-import type { ErrorAPI } from "../../interfaces/errorapi";
+import type { ErrorAPI } from "../../interfaces/ErrorApi";
 import { XCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { handleApiError } from "../../config/catch";
 

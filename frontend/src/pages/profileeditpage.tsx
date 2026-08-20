@@ -2,11 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {UserCircleIcon,CameraIcon,LockClosedIcon,TrashIcon,XCircleIcon,CheckCircleIcon,ExclamationTriangleIcon,ArrowLeftIcon} from '@heroicons/react/24/outline';
 import { api } from '../config/api';
-import type { User } from '../interfaces/user';
-import type { ErrorAPI } from '../interfaces/errorapi';
-import DeleteAccountModal from '../components/profile/deleteaccountmodal';
-import ChangePasswordModal from '../components/profile/chancepasswordmodal';
+import type { User } from '../interfaces/User';
+import DeleteAccountModal from '../components/profile/DeleteAccount';
+import ChangePasswordModal from '../components/profile/ChancePassword';
 import { handleApiError } from '../config/catch';
+import type { ErrorAPI } from '../interfaces/ErrorApi';
 
 
 export default function ProfileEditPage() {

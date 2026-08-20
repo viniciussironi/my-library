@@ -1,4 +1,4 @@
-import { api } from '../config/api';
+import { api } from "../../config/api";
 
 export default function BookCard({ titulo, autor, capa }: { titulo: string; autor: string; capa: string }) {
     return (
