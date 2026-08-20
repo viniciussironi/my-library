@@ -31,11 +31,11 @@ export default function SortLibrary({ sort, onChange }: {sort: SortOption, onCha
             className="flex items-center gap-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-full pl-3 pr-2.5 py-1.5 shadow-md hover:shadow-lg active:scale-95 transition-all cursor-pointer"
         >
             <ArrowsUpDownIcon className="h-4 w-4 text-green-600" />
-            <span className="text-sm font-medium max-w-[140px] truncate">
-            {currentLabel}
+            <span className="text-sm font-medium max-w-35 truncate">
+                {currentLabel}
             </span>
             <ChevronDownIcon
-            className={`h-4 w-4 text-gray-400 transition-transform ${open ? "rotate-180" : ""}`}
+                className={`h-4 w-4 text-gray-400 transition-transform ${open ? "rotate-180" : ""}`}
             />
         </button>
 
