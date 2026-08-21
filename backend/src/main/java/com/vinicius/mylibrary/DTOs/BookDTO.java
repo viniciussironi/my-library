@@ -15,6 +15,7 @@ public class BookDTO {
     private String author;
     private BookStatus status;
     private String coverUrl;
+    private String fileType;
 
     public BookDTO(Book book) {
         this.id = book.getId();
@@ -22,5 +23,6 @@ public class BookDTO {
         this.author = book.getAuthor();
         this.status = book.getStatus();
         this.coverUrl = book.getCoverFilename()!= null ? "/books/" + book.getId() + "/cover" : null;
+        this.fileType = book.getFileType();
     }
 }

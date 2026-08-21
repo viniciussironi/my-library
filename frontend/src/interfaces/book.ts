@@ -1,7 +1,10 @@
 export interface Book {
-    id: number;
+    id: string;
     title: string;
     author: string;
-    status: string;
-    filePath: string;
+    totalPages: number;           
+    location: string;       
+    createdAt: string;
+    updatedAt: string;
+    fileType: string;
 }

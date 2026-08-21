@@ -1,8 +1,10 @@
 import { api } from "../../config/api";
 
-export default function BookCard({ titulo, autor, capa }: { titulo: string; autor: string; capa: string }) {
+export default function BookCard({ titulo, autor, capa,  onClick }: { titulo: string, autor: string, capa: string, onClick?: () => void }) {
+
     return (
         <div
+            onClick={onClick}
             className="
               relative cursor-pointer 
               w-30 h-45 sm:w-37.5 sm:h-55 md:w-45 md:h-65 

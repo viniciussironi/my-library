@@ -43,24 +43,52 @@ public class BookService {
     private final BookRepository bookRepository;
     private final AuthService authService;
 
-    public BookService(BookRepository bookRepository, UserService userService, AuthService authService) {
+    public BookService(BookRepository bookRepository, AuthService authService) {
         this.bookRepository = bookRepository;
         this.authService = authService;
     }
 
     public Page<BookDTO> findMyBooks(String search, Pageable pageable) {
-        Long userId = authService.authenticated().getId();
-        return bookRepository.search(userId, search, pageable).map(BookDTO::new);
+        return bookRepository.search(authService.authenticated().getId(), search, pageable).map(BookDTO::new);
     }
 
+    public BookDTO findBookByIdAndUser(Long bookId) {
+        return new  BookDTO(bookRepository.findByIdAndUserId(bookId, authService.authenticated().getId()));
+    }
+
+    public Resource loadBook(Long bookId) throws IOException {
+        User user = authService.authenticated();
+        Book book = bookRepository.findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Livro não encontrado"));
+
+        if (!book.getUser().getId().equals(user.getId())) {
+            throw new ResourceNotFoundException("Usuário não encontrado");
+        }
+
+        if (book.getFilePath() == null) {
+            throw new ResourceNotFoundException("Livro não possui arquivo");
+        }
+
+        Path books = Paths.get(booksDir).normalize().toAbsolutePath();
+        Path bookPath = books.resolve(book.getFilePath()).normalize();
+
+        if (!bookPath.startsWith(books)) {
+            throw new IllegalArgumentException("Caminho de arquivo inválido");
+        }
+
+        Resource resource = new UrlResource(bookPath.toUri());
+        if (!resource.exists() || !resource.isReadable()) {
+            throw new ResourceNotFoundException("Arquivo do livro não encontrado");
+        }
+
+        return resource;
+    }
 
     public Resource loadCover(Long bookId) throws IOException {
         User user = authService.authenticated();
-        Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new ResourceNotFoundException("Livro não encontrado"));
+        Book book = bookRepository.findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Livro não encontrado"));
 
         if (!book.getUser().getId().equals(user.getId())) {
-            throw new ResourceNotFoundException("Livro não encontrado");
+            throw new ResourceNotFoundException("Usuário não encontrado");
         }
 
         if (book.getCoverFilename() == null) {
@@ -137,6 +165,7 @@ public class BookService {
             book.setTitle(info.getTitle() != null ? info.getTitle() : "Untitled PDF");
             book.setAuthor(info.getAuthor() != null ? info.getAuthor() : "Unknown Author");
             book.setTotalPages(document.getNumberOfPages());
+            book.setFileType("application/pdf");
 
             PDFRenderer renderer = new PDFRenderer(document);
             BufferedImage image = renderer.renderImageWithDPI(0, 150);
@@ -157,6 +186,7 @@ public class BookService {
                     ? "Unknown Author"
                     : epubBook.getMetadata().getAuthors().get(0).toString());
             book.setTotalPages(epubBook.getSpine().size());
+            book.setFileType("application/epub+zip");
 
             nl.siegmann.epublib.domain.Resource coverImage = epubBook.getCoverImage();
             if (coverImage != null) {

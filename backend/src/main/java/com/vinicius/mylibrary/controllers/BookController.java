@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,25 @@ public class BookController {
                                                      @PageableDefault(size = 8) Pageable pageable) {
         return ResponseEntity.ok(bookService.findMyBooks(search, pageable));
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<BookDTO> getBook(@PathVariable Long id) {
+        BookDTO book = bookService.findBookByIdAndUser(id);
+        return ResponseEntity.ok(book);
+    }
+
+    @GetMapping("/{id}/file")
+    public ResponseEntity<Resource> getBookFile(@PathVariable Long id) throws IOException {
+        Resource resource = bookService.loadBook(id);
+        BookDTO book = bookService.findBookByIdAndUser(id);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(book.getFileType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "inline; filename=\"" + book.getTitle() + "\"")
+                .body(resource);
+    }
+
 
     @PostMapping("/upload")
     public ResponseEntity<BookDTO> uploadBook(@RequestParam("file") MultipartFile file) throws IOException {

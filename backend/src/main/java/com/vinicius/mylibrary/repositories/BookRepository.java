@@ -24,4 +24,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     Page<Book> search(@Param("userId") Long userId,
                       @Param("search") String search,
                       Pageable pageable);
+
+
+    Book findByIdAndUserId(Long id, Long userId);
 }

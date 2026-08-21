@@ -36,6 +36,8 @@ public class Book {
     @Column(nullable = false, length = 1000)
     private String filePath;
 
+    private String fileType;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
